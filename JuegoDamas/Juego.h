@@ -9,27 +9,51 @@
 #include <cstdlib>
 using namespace std;
 
+const char humano = 'b';
+const char ia = 'n';
+const char humanoDama = 'B';
+const char iaDama = 'N';
+
 enum Jugador{
-    Humano,IA
+    HUMANO,IA
 };
 
-struct move{
-    int x;
-    int y;
+struct Movimiento{
+    int f1;
+    int f2;
+    int c1;
+    int c2;
 };
 
 class Juego{
     
-    char tablero[10][10];
+    //char tablero[10][10];
+        
+    char tablero[10][10] =
+    {
+        {' ','n',' ','n',' ','n',' ','n',' ','n'},
+        {'n',' ','n',' ','n',' ','n',' ','n',' '},
+        {' ','n',' ','n',' ','n',' ','n',' ','n'},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {'b',' ','b',' ','b',' ','b',' ','b',' '},
+        {' ','b',' ','b',' ','b',' ','b',' ','b'},
+        {'b',' ','b',' ','b',' ','b',' ','b',' '},
+    };
     
 public:
     
     Juego();
     void imprimirTablero();
+    void humanoMueve();
     bool chequearGanador(Jugador);
+    bool chequearMovimiento();
+    void mover(Movimiento);
+    void saltar();
     bool juegoTerminado();
     void jugar();
-    
     
 };
 
