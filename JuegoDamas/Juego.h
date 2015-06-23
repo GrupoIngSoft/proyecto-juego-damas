@@ -49,9 +49,9 @@ public:
     void imprimirTablero();
     void humanoMueve();
     bool chequearGanador(Jugador);
-    bool chequearMovimiento();
+    bool chequearMovimiento(Jugador, Movimiento);
     void mover(Movimiento);
-    void saltar();
+    void saltar(Movimiento mv);
     bool juegoTerminado();
     void jugar();
     
