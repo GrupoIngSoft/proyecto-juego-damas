@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <math.h>
 #include "Juego.h"
 
 using namespace std;
@@ -17,80 +18,199 @@ Juego::Juego(){
     */  
 }
 
-
 bool Juego::chequearMovimiento(Jugador jugador, Movimiento mv){ 
-   
-    //Chequea si el movimiento sin salto es legal.
+
+char dama, peon;
+if(jugador == IA){ dama = iaDama; peon = ia;}else{ dama = humanoDama; peon = humano;}
     
-        //chequea si un peon retrocede.
-            if (tablero[mv.f1][mv.c1] != iaDama && tablero[mv.f1][mv.c1] != humanoDama)
-            {
-            if ((jugador == IA && mv.f2 < mv.f1) || (jugador == HUMANO && mv.f2 > mv.f1)){salto = false; return false;}
-            }
+//Retorna falso si la casilla futura está ocupada.
+if (tablero[mv.f2][mv.c2] != ' '){return false;}
     
-        //chequea si la casilla futura está ocupada.
-            if (tablero[mv.f2][mv.c2] != ' '){salto = false; return false;}
+//Retorna falso si el peón a mover es vacio.
+if (tablero[mv.f1][mv.c1] == ' '){return false;}
     
-        //chequea si el peón a mover es vacio.
-            if (tablero[mv.f1][mv.c1] == ' '){salto = false; return false;}
+//Retorna falso si la pieza se está moviendo vertical u horizontalmente.
+if (mv.c1 == mv.c2 || mv.f1 == mv.f2){return false;}
     
-        //chequea si la pieza se está moviendo vertical u horizontalmente.
-            if (mv.c1 == mv.c2 || mv.f1 == mv.f2){salto = false; return false;}
+//Chequea si el movimiento sin salto es legal.
     
-        //chequea si el peón se mueve en más de una casilla.
-            if ((mv.c2 > mv.c1 + 1 || mv.c2 < mv.c1 - 1) && (mv.f2 == mv.f1 +1 || mv.f2 == mv.f1 - 1)) {salto = false; return false;}
-    
-    //chequea si el peón esta saltando.
-        if (mv.f2 > mv.f1 + 1 || mv.f2 < mv.f1 - 1){
+    //Reglas para peones
+    if (tablero[mv.f1][mv.c1] == peon){
             
-            char dama, peon;
-            if(jugador == IA){ dama = iaDama; peon = ia;}else{ dama = humanoDama; peon = humano;}
+        //Retorna falso si un peon retrocede.    
+        if ((jugador == IA && mv.f2 < mv.f1) || (jugador == HUMANO && mv.f2 > mv.f1)){return false;}
+            
+        //Retorna verdadero si se mueve solo una casilla.
+        if((mv.f2 == mv.f1 + 1 || mv.f2 == mv.f1 - 1)&&(mv.c2 == mv.c1 + 1 || mv.c2 == mv.c1 - 1)){return true;}
         
-        //chequea si el peón esta saltando muy lejos.
-            if (mv.f2 > mv.f1 + 2 || mv.f2 < mv.f1 - 2){salto = false; return false;}
+        else{//Reglas para saltos con peones.           
         
-        //chequea si el peón se esta moviendo más allá de dos columnas.
-            if (mv.c2 != mv.c1 + 2 && mv.c2 != mv.c1 - 2){salto = false; return false;}
+            //Retorna falso si el peón no se esta moviendo exactamente dos filas.
+            //(solo necesita que se cumpla una igualdad para NO retornar falso)
+            if (mv.f2 != mv.f1 + 2 && mv.f2 != mv.f1 - 2){return false;}
         
-        //chequea si el peón se está moviendo sobre otra pieza.
+            //Retorna falso si el peón no se esta moviendo exactamente dos columnas.
+            //(solo necesita que se cumpla una igualdad para NO retornar falso)
+            if (mv.c2 != mv.c1 + 2 && mv.c2 != mv.c1 - 2){return false;}
+        
+            //Retorna falso si intenta saltar sin haber una pieza que se este saltando.
             if (mv.f2 > mv.f1 && mv.c2 > mv.c1)
-            {if (tablero[mv.f2 - 1][mv.c2 - 1] == ' '){salto = false; return false;}}
+            {if (tablero[mv.f2 - 1][mv.c2 - 1] == ' '){return false;}}
 
             else if (mv.f2 > mv.f1 && mv.c2 < mv.c1)
-            {if (tablero[mv.f2 - 1][mv.c2 + 1] == ' '){salto = false; return false;}}
+            {if (tablero[mv.f2 - 1][mv.c2 + 1] == ' '){return false;}}
 
             else if (mv.f2 < mv.f1 && mv.c2 > mv.c1)
-            {if (tablero[mv.f2 + 1][mv.c2 - 1] == ' '){salto = false; return false;}}
+            {if (tablero[mv.f2 + 1][mv.c2 - 1] == ' '){return false;}}
 
             else if (mv.f2 < mv.f1 && mv.c2 < mv.c1)
-            {if (tablero[mv.f2 + 1][mv.c2 + 1] == ' '){salto = false; return false;}}
+            {if (tablero[mv.f2 + 1][mv.c2 + 1] == ' '){return false;}}
         
-        //Chequear si salta a uno de sus compañeros.
+            //Retorna falso si salta a uno de sus compañeros.
             if (mv.f2 > mv.f1 && mv.c2 > mv.c1)
-            {if ((tablero[mv.f2 - 1][mv.c2 - 1] == dama) || (tablero[mv.f2 - 1][mv.c2 - 1] == peon)){salto = false; return false;}}
+            {if ((tablero[mv.f2 - 1][mv.c2 - 1] == dama) || (tablero[mv.f2 - 1][mv.c2 - 1] == peon)){return false;}}
 
             else if (mv.f2 > mv.f1 && mv.c2 < mv.c1)
-            {if ((tablero[mv.f2 - 1][mv.c2 + 1] == dama) || (tablero[mv.f2 - 1][mv.c2 + 1] == peon)){salto = false; return false;}}
+            {if ((tablero[mv.f2 - 1][mv.c2 + 1] == dama) || (tablero[mv.f2 - 1][mv.c2 + 1] == peon)){return false;}}
         
             else if (mv.f2 < mv.f1 && mv.c2 > mv.c1)
-            {if ((tablero[mv.f2 + 1][mv.c2 - 1] == dama) || (tablero[mv.f2 + 1][mv.c2 - 1] == peon)){salto = false; return false;}}
+            {if ((tablero[mv.f2 + 1][mv.c2 - 1] == dama) || (tablero[mv.f2 + 1][mv.c2 - 1] == peon)){return false;}}
          
             else if (mv.f2 < mv.f1 && mv.c2 < mv.c1)
-            {if ((tablero[mv.f2 + 1][mv.c2 + 1] == dama) || (tablero[mv.f2 + 1][mv.c2 + 1] == peon)){salto = false; return false;}}
+            {if ((tablero[mv.f2 + 1][mv.c2 + 1] == dama) || (tablero[mv.f2 + 1][mv.c2 + 1] == peon)){return false;}}
         
-        //Si rompe las reglas, entonces el salto es legal.   
-        salto = true; return true;
-    // Si no cumple las reglas, entonces el salto es ilegal, pero el movimiento legal.    
-    }else salto = false; return true;
+            //Si no rompe las reglas, entonces el salto es legal.   
+            salto = true; return true;
+            }
+        }
+        
+    //Reglas para damas
+    if (tablero[mv.f1][mv.c1] == dama){
+        
+        int piezas = 0;//Numero de piezas en la diagonal.        
+        
+        //Retorna falso si no se mueve en una diagonal perfecta.
+        if(abs(mv.f1 - mv.f2) != abs(mv.c1 - mv.c2)){return false;}        
+        
+        //Retorna verdadero si solo me muevo una casilla.
+        if((abs(mv.f1 - mv.f2) == 1 && abs(mv.c1 - mv.c2) == 1)){return true;}        
+        
+        //Retorna falso si salta a uno de sus compañeros.
+        if((tablero[mv.f2 - 1][mv.c2 - 1] == dama) || (tablero[mv.f2 - 1][mv.c2 - 1] == peon)){ return false;}   
+        
+        //Analiza el tipo de movimiento en el caso de dirigirse a la esquina inferior derecha.
+        if(mv.f2 > mv.f1 && mv.c2 > mv.c1){
+            
+            int j = mv.c1 + 1;
+           
+            for(int i = mv.f1 + 1; i < mv.f2; i++) {
+                
+                if(tablero[i][j] != ' '){piezas++;}
+                j++;
+            }           
+            //Retorna verdadero si es un movimiento sin salto.
+            if(piezas == 0){return true;}
+            
+            //Retorna falso si no salta por una posicion a su enemigo.
+            else if(tablero[mv.f2 - 1][mv.c2 - 1] == ' '){ return false;}
+            
+            //retorna falso si salta a mas de un enemigo.
+            if(piezas > 1){return false;}
+        }     
+        
+        //Analiza el tipo de movimiento en el caso de dirigirse a la esquina inferior izquierda.
+        if(mv.f2 > mv.f1 && mv.c2 < mv.c1){
+            
+            int j = mv.c1 - 1;
+           
+            for(int i = mv.f1 + 1; i < mv.f2; i++) {
+                
+                if(tablero[i][j] != ' '){piezas++;}
+                j--;
+            }           
+            //Retorna verdadero si es un movimiento sin salto.
+            if(piezas == 0){return true;}
+            
+            //Retorna falso si no salta por una posicion a su enemigo.
+            else if(tablero[mv.f2 - 1][mv.c2 + 1] == ' '){ return false;}
+            
+            //retorna falso si salta a mas de un enemigo.
+            if(piezas > 1){return false;}
+        }
+        
+        //Analiza el tipo de movimiento en el caso de dirigirse a la esquina superior derecha.
+        if(mv.f2 < mv.f1 && mv.c2 > mv.c1){
+            
+            int j = mv.c1 + 1;
+           
+            for(int i = mv.f1 - 1; i < mv.f2; i--) {
+                
+                if(tablero[i][j] != ' '){piezas++;}
+                j++;
+            }           
+            //Retorna verdadero si es un movimiento sin salto.
+            if(piezas == 0){return true;}
+            
+            //Retorna falso si no salta por una posicion a su enemigo.
+            else if(tablero[mv.f2 + 1][mv.c2 - 1] == ' '){ return false;}
+            
+            //retorna falso si salta a mas de un enemigo.
+            if(piezas > 1){return false;}
+        }
+        
+        //Analiza el tipo de movimiento en el caso de dirigirse a la esquina superior izquierda.
+        if(mv.f2 < mv.f1 && mv.c2 < mv.c1){
+            
+            int j = mv.c1 - 1;
+           
+            for(int i = mv.f1 - 1; i < mv.f2; i--) {
+                
+                if(tablero[i][j] != ' '){piezas++;}
+                j--;
+            }           
+            //Retorna verdadero si es un movimiento sin salto.
+            if(piezas == 0){return true;}
+            
+            //Retorna falso si no salta por una posicion a su enemigo.
+            else if(tablero[mv.f2 - 1][mv.c2 - 1] == ' '){ return false;}
+            
+            //retorna falso si salta a mas de un enemigo.
+            if(piezas > 1){return false;}
+        }
+        
+        //Si no rompe las reglas, el salto es legal.
+        salto = true; return true;        
+    }
 }
 
-void Juego::mover(Movimiento mv)
-{
-       tablero[mv.f2][mv.c2] = tablero[mv.f1][mv.c1];
-       tablero[mv.f1][mv.c1] = ' ';
+void Juego::mover(Movimiento mv){
     
-       if (salto == true){saltar(mv);}
-
+    if(salto == true){
+        //remueve la pieza despues del salto.
+    
+        if (mv.f2 > mv.f1 && mv.c2 > mv.c1){ tablero[mv.f2 - 1][mv.c2 - 1] = ' ';
+        }
+        else if (mv.f2 > mv.f1 && mv.c2 < mv.c1){ tablero[mv.f2 - 1][mv.c2 + 1] = ' ';
+        }
+        else if (mv.f2 < mv.f1 && mv.c2 > mv.c1){ tablero[mv.f2 + 1][mv.c2 - 1] = ' ';
+        }
+        else if (mv.f2 < mv.f1 && mv.c2 < mv.c1){ tablero[mv.f2 + 1][mv.c2 + 1] = ' ';
+        }
+        salto = false;
+    }
+    
+    // Borra la pieza en la posicion inicial y la escribe en la nueva posicion. 
+    tablero[mv.f2][mv.c2] = tablero[mv.f1][mv.c1];
+    tablero[mv.f1][mv.c1] = ' ';
+       
+    //Si un peon llega al otro extremo, se escribe una dama.
+    for (int i = 0; i < 8; i++){
+            
+        if (tablero[0][i] == humano){ tablero[0][i] = humanoDama;}
+        
+        if (tablero[9][i] == ia){ tablero[9][i] = iaDama;}
+    }
+    
 }
 
 void Juego::humanoMueve() {
@@ -162,28 +282,9 @@ void Juego::jugar(){
 	}
 }
 
-void Juego::saltar(Movimiento mv){
-    //remueve la pieza despues del salto.
-    if (mv.f2 > mv.f1 && mv.c2 > mv.c1)
-    {
-        tablero[mv.f2 - 1][mv.c2 - 1] = ' ';
-    }
-    else if (mv.f2 > mv.f1 && mv.c2 < mv.c1)
-    {
-        tablero[mv.f2 - 1][mv.c2 + 1] = ' ';
-    }
-    else if (mv.f2 < mv.f1 && mv.c2 > mv.c1)
-    {
-        tablero[mv.f2 + 1][mv.c2 - 1] = ' ';
-    }
-    else if (mv.f2 < mv.f1 && mv.c2 < mv.c1)
-    {
-        tablero[mv.f2 + 1][mv.c2 + 1] = ' ';
-    }
-}
-
 bool Juego::chequearGanador(Jugador){
     
+    return false;
     //Estamos trabajando para usted...
 }
 
