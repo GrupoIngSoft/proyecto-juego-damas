@@ -9,8 +9,8 @@
 #include <cstdlib>
 using namespace std;
 
-const char humano = 'b';
-const char ia = 'n';
+const char humanoPeon = 'b';
+const char iaPeon = 'n';
 const char humanoDama = 'B';
 const char iaDama = 'N';
 
@@ -31,16 +31,16 @@ class Juego{
         
     char tablero[10][10] =
     {
-        {' ','B',' ',' ',' ','B',' ',' ',' ',' '},
         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
-        {' ',' ',' ',' ',' ',' ',' ','n',' ',' '},
-        {' ',' ',' ',' ','B',' ',' ',' ',' ',' '},
+        {'B',' ',' ',' ',' ',' ',' ',' ',' ',' '},
         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
-        {' ',' ','n',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ','B',' ',' ',' ','B',' ',' ',' '},
         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
-        {'b',' ',' ',' ','b',' ','b',' ','b',' '},
-        {' ','b',' ','b',' ','b',' ','b',' ','b'},
-        {'b',' ','b',' ','b',' ','b',' ','b',' '},
+        {' ',' ',' ',' ','n',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
     };
     
 public:
@@ -51,7 +51,8 @@ public:
     bool chequearGanador(Jugador);
     bool chequearMovimiento(Jugador, Movimiento);
     void mover(Movimiento);
-    bool juegoTerminado();
+    void multisalto(Movimiento);
+    void sopladita(Movimiento);
     void jugar();
     
 };
