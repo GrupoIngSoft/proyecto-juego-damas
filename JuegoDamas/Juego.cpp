@@ -252,15 +252,16 @@ void Juego::mover(Movimiento mv){
                 j++;
                 }
             }
-            
-            
         }
-        salto = false;
     }
     
     // Borra la pieza en la posicion inicial y la escribe en la nueva posicion. 
     tablero[mv.f2][mv.c2] = tablero[mv.f1][mv.c1];
     tablero[mv.f1][mv.c1] = ' ';
+    
+    if(salto == false){sopladita(mv);}//Si se realizo un salto, no llamar a la funcion sopladita.
+    
+    salto = false;
        
     //Si un peon llega al otro extremo, se escribe una dama.
     for (int i = 0; i < 8; i++){
@@ -270,7 +271,7 @@ void Juego::mover(Movimiento mv){
         if (tablero[9][i] == iaPeon){ tablero[9][i] = iaDama;}
     }
     
-    //sopladita(mv);
+    
     
     //multisalto(mv);
     
@@ -301,30 +302,126 @@ void Juego::multisalto(Movimiento mv){
 }
 
 void Juego::sopladita(Movimiento mv){
-
-    for(int i = 0; i < 10; i++) {
+    
+    Movimiento aux;
+    bool sw = false;//Si ya capturo una dama, no sigue capurando mas.
+    bool cap = false;//Si ya capturo una pieza, no sigue capturando mas.
+    
+    for(int i = 0; i < 10; i++) {//Busca en toda la matriz.
         
-		for(int j = 0; j < 10; j++) { 
+        for(int j = 0; j < 10; j++) {
                     
-                    if(tablero[i][j] == humanoPeon){
+            if(tablero[i][j] == humanoDama){//Analiza solo a las damas.
+                    
+                if( ((i == mv.f2) && (j == mv.c2)) || (cap == true)){}else{//Analiza a todas las damas excepto la que se movio.
+                
+                    if(cap == false){//Busca un peon o dama enemiga dentro de la diagonal inferior derecha.
+                    
+                        int c = j + 1, f = i + 1;//Toma a la casilla siguiente como primera casila a analizar.
+                    
+                        aux.f1 = i; aux.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                        while(c < 9 && f < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
                         
-                        mv.c1 = j; mv.f1 = i; mv.c2 = mv.c1 + 2; mv.f2 = mv.f1 - 2;
-                    
-                        if(chequearMovimiento(HUMANO, mv) == true && salto == true){
-                            tablero[i][j] = ' ';cout<<"Se le ha soplado la pieza: ( "<<i<<" , "<<j<<" )";
-                        }
-                        mv.c1 = j; mv.f1 = i; mv.c2 = mv.c1 - 2; mv.f2 = mv.f1 - 2;
-                    
-                        if(chequearMovimiento(HUMANO, mv) == true && salto == true){
-                            tablero[i][j] = ' ';cout<<"Se le ha soplado la pieza: ( "<<i<<" , "<<j<<" )";
-                        }
-                    }else if(tablero[i][j] == humanoDama){
-                    
+                        if((tablero[f][c] == iaPeon) || (tablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                            aux.f2 = f + 1; aux.c2 = c + 1; 
                         
+                            if((chequearMovimiento(HUMANO, aux) == true) && (salto == true)){ 
+                            tablero[i][j] = ' ';cout<<"Se le ha soplado la pieza: ( "<<i<<" , "<<j<<" )\n"; sw = true; cap = true;}
+                        }
+                        c++;f++;
+                        }
                     
-                    } 
+                    }
+                    
+                    if(cap == false){//Busca un peon o dama enemiga dentro de la diagonal inferior izquierda.
+                    
+                        int c = j - 1, f = i + 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                        aux.f1 = i; aux.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                        while(c > 0 && f < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                        if((tablero[f][c] == iaPeon) || (tablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                            aux.f2 = f + 1; aux.c2 = c - 1; 
+                        
+                            if((chequearMovimiento(HUMANO, aux) == true) && (salto == true)){ 
+                            tablero[i][j] = ' ';cout<<"Se le ha soplado la pieza: ( "<<i<<" , "<<j<<" )\n"; sw = true; cap = true;}
+                        }
+                        c--;f++;
+                        }
+                    
+                    }
+                    
+                    if(cap == false){//Busca un peon o dama enemiga dentro de la diagonal superior izquierda.
+                    
+                        int c = j - 1, f = i - 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                        aux.f1 = i; aux.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                        while(c > 0 && f > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                        if((tablero[f][c] == iaPeon) || (tablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                            aux.f2 = f - 1; aux.c2 = c - 1; 
+                        
+                            if((chequearMovimiento(HUMANO, aux) == true) && (salto == true)){ 
+                            tablero[i][j] = ' ';cout<<"Se le ha soplado la pieza: ( "<<i<<" , "<<j<<" )\n"; sw = true; cap = true;}
+                        }
+                        c--;f--;
+                        }
+                    
+                    }
+                    
+                    if(cap == false){//Busca un peon o dama enemiga dentro de la diagonal superior derecha.
+                    
+                        int c = j + 1, f = i - 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                        aux.f1 = i; aux.c1 = j;//Guarda la pieza como origen del movimiento.
+                                               
+                        while(c < 9 && f > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                        if((tablero[f][c] == iaPeon) || (tablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                            aux.f2 = f - 1; aux.c2 = c + 1; 
+                        
+                            if((chequearMovimiento(HUMANO, aux) == true) && (salto == true)){ 
+                            tablero[i][j] = ' ';cout<<"Se le ha soplado la pieza: ( "<<i<<" , "<<j<<" )\n"; sw = true; cap = true;}
+                        }
+                        c++;f--;
+                        }
+                    
+                    }
+                    
                 }
+            }
         }
+    }
+    if(sw == false){//Busca peones en caso de no haber encontrado damas primeramente.
+        
+        for(int i = 0; i < 10; i++){//Busca en toda la matriz.
+        
+        for(int j = 0; j < 10; j++) {
+                    
+            if(tablero[i][j] == humanoPeon ){//Analiza solo a los peones.
+                        
+                if( (i == mv.f2) && (j == mv.c2) || (cap == true)){}else{//Analiza a todos los peones excepto al que se movio.
+                        
+                        aux.c1 = j; aux.f1 = i; aux.c2 = aux.c1 + 2; aux.f2 = aux.f1 - 2;//Analiza si exite posible captura por la derecha.
+                    
+                        if(chequearMovimiento(HUMANO, aux) == true && salto == true){
+                            tablero[i][j] = ' ';cout<<"Se le ha soplado la pieza: ( "<<i<<" , "<<j<<" )\n";cap = true;
+                        }else{
+                        aux.c1 = j; aux.f1 = i; aux.c2 = aux.c1 - 2; aux.f2 = aux.f1 - 2;//Analiza si existe posible capturapor la izquierda.
+                    
+                        if(chequearMovimiento(HUMANO, aux) == true && salto == true){
+                            tablero[i][j] = ' ';cout<<"Se le ha soplado la pieza: ( "<<i<<" , "<<j<<" )\n"; cap = true;
+                        }
+                        }
+                }
+                        
+            }
+        }
+        }
+    }
 }
 
 void Juego::humanoMueve(){
