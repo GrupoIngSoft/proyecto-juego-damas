@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <math.h>
 #include "Juego.h"
+#include <string.h>
 
 using namespace std;
 
@@ -259,8 +260,13 @@ void Juego::mover(Movimiento mv){
     tablero[mv.f2][mv.c2] = tablero[mv.f1][mv.c1];
     tablero[mv.f1][mv.c1] = ' ';
     
+    
+    
     if(salto == false){sopladita(mv);}//Si se realizo un salto, no llamar a la funcion sopladita.
     
+    
+    
+    if(salto == true){multisalto(mv);}//analiza la opcion de multisalto.
     salto = false;
        
     //Si un peon llega al otro extremo, se escribe una dama.
@@ -271,34 +277,149 @@ void Juego::mover(Movimiento mv){
         if (tablero[9][i] == iaPeon){ tablero[9][i] = iaDama;}
     }
     
-    
-    
-    //multisalto(mv);
-    
 }
 
 void Juego::multisalto(Movimiento mv){
     
-    /*
-    //Ejemplo para capturar en la diagonal derecha
-    if(tablero[mv.f2][mv.c2] == humanoPeon ){
+    Movimiento izq, der;//Guarda los posibles movimientos para peones.
+    Movimiento iizq,ider,sizq,sder;//Guarda los posibles movimientos para famas.
+    bool i = false, d = false;//Guarda si hay posibilidad de saltar por derecha y/o izquierda.
+    bool ii = false, id = false, si = false,sd = false;//Guarda si hay posibilidad de saltar por cualquiera de las diagonales.
+    Movimiento aux;//guarda movimiento ingresado por el usuario.
+    char respuesta[10]; 
+    
+    if(tablero[mv.f2][mv.c2] == humanoPeon ){//Multisalto moviendo un peon.
+                   
+            der.c1 = mv.c2; der.f1 = mv.f2; der.c2 = der.c1 + 2; der.f2 = der.f1 - 2;
+         
+                if(chequearMovimiento(HUMANO, der) == true && salto == true){ d = true;}
         
-        mv.c1 = mv.c2; mv.f1 = mv.f2; mv.c2 = mv.c1 + 2; mv.f2 = mv.f1 - 2;
+            izq.c1 = mv.c2; izq.f1 = mv.f2; izq.c2 = izq.c1 - 2; izq.f2 = izq.f1 - 2;
          
-        if(chequearMovimiento(HUMANO, mv) == true && salto == true){ mover(mv);}   
-    }
-    */
-    /*
-    //Inteligencia de multisaltos para dama.
-    //(Regla preferencia dama: Es obligacion capturar con la dama en caso de ser posible, aunque no sea la mejor opcion)
-    if(tablero[mv.f2][mv.c2] == iaDama){
+                if(chequearMovimiento(HUMANO, izq) == true && salto == true){ i = true;}
+        
+        if(d == true && i == true){ 
+            imprimirTablero();//Imprime tablero actualizado.
+            cout<<"¿Desea continuar capturando por la 'izquierda' o 'derecha'?\n";       
+            cin>>respuesta;
+            //No avanza hasta responder una de las dos opciones.
+            while( strcmp("izquierda",respuesta) != 0 && strcmp("derecha",respuesta) != 0 ){
+            cout<<"¿Desea continuar capturando por la 'izquierda' o 'derecha'?\n";       
+            cin>>respuesta;
+            }
+            if(strcmp("izquierda",respuesta) == 0){mover(izq);}
+            if(strcmp("derecha",respuesta) == 0){mover(der);}
+        
+        }else if(d == true){ mover(der);}
+         else if(i == true){ mover(izq);}
+    }else
     
-    
-    }else if(tablero[mv.f2][mv.c2] == iaPeon){
-    //Inteligencia de multisaltos para peon.
-         
+    if(tablero[mv.f2][mv.c2] == humanoDama ){//Multisalto moviendo una dama.
+        
+        //Busca un peon o dama enemiga dentro de la DIAGONAL INFERIOR DERECHA.
+        int f, c;            
+        f = mv.f2 + 1; c = mv.c2 + 1;//Toma a la casilla siguiente como primera casila a analizar.
+                    
+        ider.f1 = mv.f2; ider.c1 = mv.c2;//Guarda la pieza como origen del movimiento
+                                               
+        while(f < 9 && c < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+            if((tablero[f][c] == iaPeon) || (tablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                
+                ider.f2 = f + 1; ider.c2 = c + 1; 
+                        
+                if((chequearMovimiento(HUMANO, ider) == true) && (salto == true)){ id = true;}
+            }
+        c++;f++;
+        }
+        
+        //Busca un peon o dama enemiga dentro de la DIAGONAL INFERIOR IZQUIERDA.
+        
+        f = mv.f2 + 1;  c = mv.c2 - 1;//Toma a la casilla siguiente como primera casila a analizar.
+        
+        iizq.f1 = mv.f2; iizq.c1 = mv.c2;//Guarda la pieza como origen del movimiento
+                                               
+        while(f < 9 && c > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+            if((tablero[f][c] == iaPeon) || (tablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                
+                iizq.f2 = f + 1; iizq.c2 = c - 1; 
+                        
+                if((chequearMovimiento(HUMANO, iizq) == true) && (salto == true)){ ii = true;}
+            }
+        c--;f++;
+        }
+        
+        //Busca un peon o dama enemiga dentro de la DIAGONAL SUPERIOR DERECHA.
+        
+        f = mv.f2 - 1;  c = mv.c2 + 1;//Toma a la casilla siguiente como primera casila a analizar.
+        
+        sder.f1 = mv.f2; sder.c1 = mv.c2;//Guarda la pieza como origen del movimiento
+                                               
+        while(f > 0 && c < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+            if((tablero[f][c] == iaPeon) || (tablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                
+                sder.f2 = f - 1; sder.c2 = c + 1; 
+                        
+                if((chequearMovimiento(HUMANO, sder) == true) && (salto == true)){ sd = true;}
+            }
+        c++;f--;
+        }
+        
+        //Busca un peon o dama enemiga dentro de la DIAGONAL SUPERIOR IZQUIERDA.
+        
+        f = mv.f2 - 1;  c = mv.c2 - 1;//Toma a la casilla siguiente como primera casila a analizar.
+        
+        sizq.f1 = mv.f2; sizq.c1 = mv.c2;//Guarda la pieza como origen del movimiento
+                                               
+        while(f > 0 && c > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+            if((tablero[f][c] == iaPeon) || (tablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                
+                sizq.f2 = f - 1; sizq.c2 = c - 1; 
+                        
+                if((chequearMovimiento(HUMANO, sizq) == true) && (salto == true)){ si = true;}
+            }
+        c--;f--;
+        }
+            
+        
+        if(id == true || ii == true || si == true || sd == true){ 
+            
+            imprimirTablero();//Imprime tablero actualizado.
+            
+            bool sw = false;
+            
+            cout <<"Debe realizar un salto!\n";
+            cout << "Mover pieza: ("<<mv.f2 << " , "<<mv.c2 <<" ) \n";
+            cout << "A la casilla: \n";
+            cout << "Fila: ";
+            cin >> aux.f2;
+            cout << "Columna: ";
+            cin >> aux.c2;
+                
+            aux.f1 = mv.f2; aux.c1 = mv.c2; //Guarda la posicion actual como origen del siguiente salto solicitado a evaluar.
+                
+            while(sw == false){
+            cout << "aqui!!!";    
+                while (aux.f2 < 0 || aux.f2 > 9 || aux.c2 < 0 || aux.c2 > 9){ //Es necesario pedir al usuario en que casilla desea caer despues de unn salto.
+            
+                cout <<"Debe realizar un salto!\n";
+                cout << "Mover pieza: ("<<mv.f2 << " , "<<mv.c2 <<" ) \n";
+                cout << "A la casilla: \n";
+                cout << "Fila: ";
+                cin >> aux.f2;
+                cout << "Columna: ";
+                cin >> aux.c2;
+                }
+                               
+                if((chequearMovimiento(HUMANO, aux) == true) && (salto == true)){ sw = true;}
+            
+            }mover(aux);
+        }
+        
     }
-    */
 }
 
 void Juego::sopladita(Movimiento mv){
@@ -479,6 +600,7 @@ void Juego::jugar(){
 	while(!chequearGanador(HUMANO) && !chequearGanador(IA)) {
 		
 		if(turno % 2 == 0) {
+                        cout << endl << "Movimiento del humano:" << endl;
 			humanoMueve();
 			if(chequearGanador(HUMANO) == true){ cout << "El humano ha ganado!" << endl;}
 			turno++;
