@@ -11,7 +11,7 @@ using namespace std;
 
 bool salto=false;//switch que avisa a las otras funciones que se realiza un salto.
 bool mnsj_err=false;//switch que permite imprimir mensajes de error solo cuando el humano mueve.
-bool ia=false;//switch para quitar mensajes no deseados cuando juega minimax.
+bool ia=false;//switch para evitar acciones no deseadas cuando juega minimax.
 
 Juego::Juego(){}
 
@@ -20,9 +20,10 @@ bool Juego::chequearMovimiento(Jugador jugador, Movimiento mv, char TABLERO[10][
 char dama, peon;
 //No le permite al jugador mover una pieza contraria.
 if(jugador == IA){ dama = iaDama; peon = iaPeon;}else if(jugador == HUMANO){ dama = humanoDama; peon = humanoPeon;}
-
+//Se asegura que los parametros sean validos.
 if (mv.f1 < 0 || mv.f1 > 9 || mv.c1 < 0 || mv.c1 > 9){if(mnsj_err==true){cout<<"Parametros incorrectos.\n";}return false;}
-        
+if (mv.f2 < 0 || mv.f2 > 9 || mv.c2 < 0 || mv.c2 > 9){if(mnsj_err==true){cout<<"Parametros incorrectos.\n";}return false;}    
+
 //Retorna falso si la casilla destino está ocupada.
 if (TABLERO[mv.f2][mv.c2] != ' '){if(mnsj_err==true){cout<<"La casilla destino está ocupada.\n";}return false;}
     
@@ -81,8 +82,6 @@ if (mv.c1 == mv.c2 || mv.f1 == mv.f2){if(mnsj_err==true){cout<<"No puede mover l
             salto = true; return true;
             }
         }
-
-        
     //Reglas de saltos para damas
     if (TABLERO[mv.f1][mv.c1] == dama){
         
@@ -194,13 +193,13 @@ void Juego::mover(Movimiento mv, char TABLERO[10][10]){
         //Si juego con un peon, remueve la pieza capturada despues del salto.
         if( TABLERO[mv.f1][mv.c1] == iaPeon || TABLERO[mv.f1][mv.c1] == humanoPeon){
             
-            if (mv.f2 > mv.f1 && mv.c2 > mv.c1){ cout<<"Se capturo la pieza "<<mv.f2 - 1<<" - "<<mv.c2 - 1<<" \n"; TABLERO[mv.f2 - 1][mv.c2 - 1] = ' ';
+            if (mv.f2 > mv.f1 && mv.c2 > mv.c1){TABLERO[mv.f2 - 1][mv.c2 - 1] = ' '; if(ia==false){cout<<"Se capturo la pieza "<<mv.f2 - 1<<" - "<<mv.c2 - 1<<" \n"; }
             }
-            else if (mv.f2 > mv.f1 && mv.c2 < mv.c1){ cout<<"Se capturo la pieza "<<mv.f2 - 1<<" - "<<mv.c2 + 1<<" \n"; TABLERO[mv.f2 - 1][mv.c2 + 1] = ' ';
+            else if (mv.f2 > mv.f1 && mv.c2 < mv.c1){TABLERO[mv.f2 - 1][mv.c2 + 1] = ' ';if(ia==false){ cout<<"Se capturo la pieza "<<mv.f2 - 1<<" - "<<mv.c2 + 1<<" \n"; }
             }
-            else if (mv.f2 < mv.f1 && mv.c2 > mv.c1){cout<<"Se capturo la pieza "<<mv.f2 + 1<<" - "<<mv.c2 - 1<<" \n"; TABLERO[mv.f2 + 1][mv.c2 - 1] = ' ';
+            else if (mv.f2 < mv.f1 && mv.c2 > mv.c1){TABLERO[mv.f2 + 1][mv.c2 - 1] = ' '; if(ia==false){cout<<"Se capturo la pieza "<<mv.f2 + 1<<" - "<<mv.c2 - 1<<" \n"; }
             }
-            else if (mv.f2 < mv.f1 && mv.c2 < mv.c1){cout<<"Se capturo la pieza "<<mv.f2 + 1<<" - "<<mv.c2 + 1<<" \n"; TABLERO[mv.f2 + 1][mv.c2 + 1] = ' ';
+            else if (mv.f2 < mv.f1 && mv.c2 < mv.c1){TABLERO[mv.f2 + 1][mv.c2 + 1] = ' ';if(ia==false){cout<<"Se capturo la pieza "<<mv.f2 + 1<<" - "<<mv.c2 + 1<<" \n"; }
             }
         }
         
@@ -213,7 +212,7 @@ void Juego::mover(Movimiento mv, char TABLERO[10][10]){
            
                 for(int i = mv.f1 + 1; i < mv.f2; i++) {
                 
-                    if(TABLERO[i][j] != ' '){TABLERO[i][j] = ' ';cout<<"Se capturo la pieza: ( "<<i<<" , "<<j<<" )\n";}
+                    if(TABLERO[i][j] != ' '){TABLERO[i][j] = ' ';if(ia==false){cout<<"Se capturo la pieza: ( "<<i<<" , "<<j<<" )\n";}}
                 j++;
                 }
                            
@@ -225,7 +224,7 @@ void Juego::mover(Movimiento mv, char TABLERO[10][10]){
            
                 for(int i = mv.f1 + 1; i < mv.f2; i++) {
                 
-                    if(TABLERO[i][j] != ' '){TABLERO[i][j] = ' ';cout<<"Se capturo la pieza: ( "<<i<<" , "<<j<<" )\n";}
+                    if(TABLERO[i][j] != ' '){TABLERO[i][j] = ' ';if(ia==false){cout<<"Se capturo la pieza: ( "<<i<<" , "<<j<<" )\n";}}
                 j--;
                 }
             }else
@@ -236,7 +235,7 @@ void Juego::mover(Movimiento mv, char TABLERO[10][10]){
            
                 for(int i = mv.f1 - 1; i > mv.f2; i--) {
                 
-                    if(TABLERO[i][j] != ' '){TABLERO[i][j] = ' ';cout<<"Se capturo la pieza: ( "<<i<<" , "<<j<<" )\n";}
+                    if(TABLERO[i][j] != ' '){TABLERO[i][j] = ' ';if(ia==false){cout<<"Se capturo la pieza: ( "<<i<<" , "<<j<<" )\n";}}
                 j--;
                 }
             }else
@@ -247,7 +246,7 @@ void Juego::mover(Movimiento mv, char TABLERO[10][10]){
            
                 for(int i = mv.f1 - 1; i > mv.f2; i--) {
                 
-                    if(TABLERO[i][j] != ' '){TABLERO[i][j] = ' ';cout<<"Se capturo la pieza: ( "<<i<<" , "<<j<<" )\n";}
+                    if(TABLERO[i][j] != ' '){TABLERO[i][j] = ' ';if(ia==false){cout<<"Se capturo la pieza: ( "<<i<<" , "<<j<<" )\n";}}
                 j++;
                 }
             }
@@ -256,8 +255,7 @@ void Juego::mover(Movimiento mv, char TABLERO[10][10]){
     
     if(TABLERO[mv.f1][mv.c1] == humanoPeon || TABLERO[mv.f1][mv.c1] == humanoDama){//Funcion sopladita debe ser llamada antes de realizar los cambios,para asi evaluar incluso a una unica pieza que se mueva y no coma teniendo la oportunidad.
     
-        if(salto == false){sopladita(mv,TABLERO);}//Si se realizo un salto, no llamar a la funcion sopladita.
-        
+        if(salto == false && ia == false){sopladita(mv,TABLERO);}//Si se realizo un salto, no llamar a la funcion sopladita.
     }
     
     // Borra la pieza en la posicion inicial y la escribe en la nueva posicion. 
@@ -274,17 +272,17 @@ void Juego::mover(Movimiento mv, char TABLERO[10][10]){
     
     if(TABLERO[mv.f2][mv.c2] == humanoPeon || TABLERO[mv.f2][mv.c2] == humanoDama){
             
-        if(salto == true){
-            
+        if(salto == true && ia == false){
+            system("clear");///limpia la pantalla
             imprimirTablero(TABLERO);//imprimer el tablero despues de haber realizado un salto.
             multisalto(mv,TABLERO);//analiza la opcion de multisalto.
+            system("clear");//limpia la pantalla
         }
     }
-    
     salto = false;
 }
 
-void Juego::multisalto(Movimiento mv, char TABLERO[10][10]){ 
+void Juego::multisalto(Movimiento mv, char TABLERO[10][10]){//Funcion mltisalto cuando juega el humano.
     
     salto=false;//devuelve la variable salto a su valor por defecto
     char resp[2];//guarda la respuesta si o no.
@@ -300,7 +298,7 @@ void Juego::multisalto(Movimiento mv, char TABLERO[10][10]){
         cin>>resp;
     }
     
-    if(strcmp("no",resp) == 0){sopladita(mv,TABLERO);//Cuando termina de realizar multisaltos, soplara de ser posible.
+    if(strcmp("no",resp) == 0){ mv.c1 = mv.c2; mv.f1 = mv.f2; sopladita(mv,TABLERO);//Cuando termina de realizar multisaltos, soplara de ser posible.
     }else if(strcmp("si",resp) == 0){
     
             bool sw = false;
@@ -323,14 +321,14 @@ void Juego::multisalto(Movimiento mv, char TABLERO[10][10]){
     } 
  }
 
-void Juego::sopladita(Movimiento mv, char TABLERO[10][10]){
+void Juego::sopladita(Movimiento mv, char TABLERO[10][10]){//funcion para soplar las piezas del humano en caso que no capture teniendo la posibilidad.
     
     mnsj_err=false;//cuando se llama a la funcion sopladita, todavia no ha terminado la funcion humano mueve, por lo tanto mnsj_err es true cuando entra en esta funcion.
     
     Movimiento aux,origen,peon,dama;
-    origen.f1 = -1; origen.c1= -1;
-    peon.f1 = -1; peon.c1= -1;
-    dama.f1 = -1; dama.c1= -1;
+    origen.f1 = -1; origen.c1= -1;//valiable auxilar para guardar coordenadas en caso de que la pieza a soplar sea la del origen de movimiento.
+    peon.f1 = -1; peon.c1= -1;//valiable auxilar para guardar coordenadas en caso de que la pieza a soplar sea un peon.
+    dama.f1 = -1; dama.c1= -1;//valiable auxilar para guardar coordenadas en caso de que la pieza a soplar sea una dama.
     
     bool sw = false;//Si ya capturo una dama, no sigue capurando mas.
     bool cap = false;//Si ya capturo una pieza, no sigue capturando mas.
@@ -343,24 +341,21 @@ void Juego::sopladita(Movimiento mv, char TABLERO[10][10]){
                         
                 if((cap == true)){}else{//Analiza a todos los peones.
                         
-                        //if(j > 1 && j < 8 && i > 1 && i < 8){
-                        
                         aux.c1 = j; aux.f1 = i; aux.c2 = aux.c1 + 2; aux.f2 = aux.f1 - 2;//Analiza si exite posible captura por la derecha.
                     
                         if(chequearMovimiento(HUMANO, aux,TABLERO) == true && salto == true){
-                            
-                            if(i==mv.f2 && j==mv.c2){origen.f1=i;origen.c1=j;cap=true;}else{peon.f1 = i; peon.c1= j;}
+                            salto = false;
+                            if(i==mv.f1 && j==mv.c1){origen.f1=i;origen.c1=j;cap=true;}else{peon.f1 = i; peon.c1= j;}
                             
                         }else{
                         aux.c1 = j; aux.f1 = i; aux.c2 = aux.c1 - 2; aux.f2 = aux.f1 - 2;//Analiza si existe posible capturapor la izquierda.
                     
                             if(chequearMovimiento(HUMANO, aux,TABLERO) == true && salto == true){
-                            
-                            if(i==mv.f2 && j==mv.c2){origen.f1=i;origen.c1=j;cap=true;}else{peon.f1 = i; peon.c1= j;}
+                            salto = false;
+                            if(i==mv.f1 && j==mv.c1){origen.f1=i;origen.c1=j;cap=true;}else{peon.f1 = i; peon.c1= j;}
                             
                             }
                         }
-                        //}
                 }
                         
             }
@@ -387,9 +382,8 @@ void Juego::sopladita(Movimiento mv, char TABLERO[10][10]){
                             aux.f2 = f + 1; aux.c2 = c + 1; 
                         
                             if((chequearMovimiento(HUMANO, aux,TABLERO) == true) && (salto == true)){
-                                
-                                if(i==mv.f2 && j==mv.c2){origen.f1=i;origen.c1=j;cap=true;}else{dama.f1 = i; dama.c1= j;}
-                                
+                                salto = false;
+                                if(i==mv.f1 && j==mv.c1){origen.f1=i;origen.c1=j;cap=true;}else{dama.f1 = i; dama.c1= j;}
                             }
                         }
                         c++;f++;
@@ -408,14 +402,12 @@ void Juego::sopladita(Movimiento mv, char TABLERO[10][10]){
                             aux.f2 = f + 1; aux.c2 = c - 1; 
                         
                             if((chequearMovimiento(HUMANO, aux,TABLERO) == true) && (salto == true)){
-                                
-                                if(i==mv.f2 && j==mv.c2){origen.f1=i;origen.c1=j;cap=true;}else{dama.f1 = i; dama.c1= j;}
-                                
+                                salto = false;
+                                if(i==mv.f1 && j==mv.c1){origen.f1=i;origen.c1=j;cap=true;}else{dama.f1 = i; dama.c1= j;}
                             }
                         }
                         c--;f++;
                         }
-                    
                     }
                     
                     if(cap == false){//Busca un peon o dama enemiga dentro de la diagonal superior izquierda.
@@ -430,9 +422,8 @@ void Juego::sopladita(Movimiento mv, char TABLERO[10][10]){
                             aux.f2 = f - 1; aux.c2 = c - 1; 
                         
                             if((chequearMovimiento(HUMANO, aux,TABLERO) == true) && (salto == true)){
-                                
-                                if(i==mv.f2 && j==mv.c2){origen.f1=i;origen.c1=j;cap=true;}else{dama.f1 = i; dama.c1= j;}
-                                
+                                salto = false;
+                                if(i==mv.f1 && j==mv.c1){origen.f1=i;origen.c1=j;cap=true;}else{dama.f1 = i; dama.c1= j;}
                             }
                         }
                         c--;f--;
@@ -451,34 +442,30 @@ void Juego::sopladita(Movimiento mv, char TABLERO[10][10]){
                             aux.f2 = f - 1; aux.c2 = c + 1; 
                         
                             if((chequearMovimiento(HUMANO, aux,TABLERO) == true) && (salto == true)){
-                                
-                                if(i==mv.f2 && j==mv.c2){origen.f1=i;origen.c1=j;cap=true;}else{dama.f1 = i; dama.c1= j;}
-                                
+                                salto = false;
+                                if(i==mv.f1 && j==mv.c1){origen.f1=i;origen.c1=j;cap=true;}else{dama.f1 = i; dama.c1= j;}
                             }
                         }
                         c++;f--;
                         }
-                    
                     }
-                    
                 }
             }
         }
     }
-    if(origen.f1 != -1 && origen.c1 != -1){
+    if(origen.f1 != -1 && origen.c1 != -1){//Si la pieza que no realizo la captura es la misma que se movio, la soplara.
         
-        TABLERO[origen.f1][origen.c1] = ' '; if(ia==false){cout<<"Se le ha soplado la pieza: ( "<<origen.f1<<" , "<<origen.c1<<" )\n";}
+        TABLERO[origen.f1][origen.c1] = ' ';cout<<"Se le ha soplado la pieza: ( "<<origen.f1<<" , "<<origen.c1<<" )\n";
         
-    }else if(dama.f1 != -1 && dama.c1 != -1){
+    }else if(dama.f1 != -1 && dama.c1 != -1 ){//En segundo lugar buscara soplar una dama ya que es mas valiosa.
         
-        TABLERO[dama.f1][dama.c1] = ' '; if(ia==false){cout<<"Se le ha soplado la pieza: ( "<<dama.f1<<" , "<<dama.c1<<" )\n";}
+        TABLERO[dama.f1][dama.c1] = ' '; cout<<"Se le ha soplado la pieza: ( "<<dama.f1<<" , "<<dama.c1<<" )\n";
         
-    }else if(peon.f1 != -1 && peon.c1 != -1){
+    }else if(peon.f1 != -1 && peon.c1 != -1 ){//por ultimo eliminara un peon de ser el caso.
         
-        TABLERO[peon.f1][peon.c1] = ' '; if(ia==false){cout<<"Se le ha soplado la pieza: ( "<<peon.f1<<" , "<<peon.c1<<" )\n";}
+        TABLERO[peon.f1][peon.c1] = ' '; cout<<"Se le ha soplado la pieza: ( "<<peon.f1<<" , "<<peon.c1<<" )\n";
         
     }
-    
     salto=false;//Regresa al valor de salto por defecto.
 }
 
@@ -535,16 +522,14 @@ void Juego::humanoMueve(){
 
         if(sw==false){ cout<<"Movimiento ilegal. Por favor intente otra vez.\n";
         }else{
-            system("clear");
+            system("clear");//limpia la pantalla
             cout<<"***************************************************************"<<endl;
             cout<<"=> El humano ha movido la pieza:("<<mv.f1<< "," <<mv.c1<< ") a la posicion ("<<mv.f2<<","<<mv.c2<<")\n";
             
             mover(mv, tablero); 
         }
     }
-    
     mnsj_err=false;
-       
 }
 
 void Juego::jugar(){
@@ -561,27 +546,43 @@ void Juego::jugar(){
                         cout << endl << "TURNO DEL HUMANO:" << endl;
 			
                         humanoMueve();
-                        
+                                                
 			if(chequearGanador(HUMANO,tablero) == true){ cout << "El humano ha ganado!" << endl;}
-			turno++;
+			if(chequearGanador(IA,tablero) == true){ cout << "La maquina ha ganado!" << endl;}
+                        turno++;
                         
 		} else {
                         
                         ia=true;
-			
 			Movimiento IAmovi = minimax(tablero);//Despues de llamar a minimax, salto es igual a false.(esto se debe a que cada vez que se llama a la funcion puntaje, se debe devolver el valor de salto a 'false' para que esto no interfiera con los siguientes analisis)
-                        cout<<"=> La maquina ha movido la pieza:("<<IAmovi.f1<<","<<IAmovi.c1<<") a la posicion ("<<IAmovi.f2<<","<<IAmovi.c2<<")\n";
-                        cout<<"***************************************************************"<<endl;
-                        chequearMovimiento(IA,IAmovi,tablero);//con esto volvemos el valor de salto a true en caso de ser salto, para que eliminar la pieza en caso de salto al llamar a la funcion mover.
+                        ia=false;
+                        chequearMovimiento(IA,IAmovi,tablero);//con esto volvemos el valor de salto a true en caso de ser salto, para eliminar la pieza en caso de salto al llamar a la funcion mover.
+                        Movimiento multi;//varialble auxiliar
                         
-                        if(salto == true){mover(IAmovi,tablero);salto=false;}else{mover(IAmovi,tablero);}
+                        if(salto == true){//Solo ejecutara multisaltos si el primer movimiento fue un salto.
+                        
+                            do{//ejecuta multisaltos en caso de ser posible.
+                                cout<<"=> La maquina ha movido la pieza:("<<IAmovi.f1<<","<<IAmovi.c1<<") a la posicion ("<<IAmovi.f2<<","<<IAmovi.c2<<")\n";
+                                cout<<"***************************************************************"<<endl;
+                                mover(IAmovi,tablero);//Actualiza el tablero.(mover vuelve el valor de salto a falso)
+                                         
+                                multi.f1 = IAmovi.f2; multi.c1 = IAmovi.c2;//Guardo el destino del ultimo movimiento en multi.
+                                                     
+                                ia=true;
+                                IAmovi = minimax(tablero);//genera nuevo movimiento.
+                                ia=false;
+                                                        
+                            }while(IAmovi.f1 == multi.f1 && IAmovi.c1 == multi.c1 && chequearMovimiento(IA,IAmovi,tablero) == true && salto == true);//comparo el ultimo destino con el proximo origen
+                        }else{
+                            cout<<"=> La maquina ha movido la pieza:("<<IAmovi.f1<<","<<IAmovi.c1<<") a la posicion ("<<IAmovi.f2<<","<<IAmovi.c2<<")\n";
+                            cout<<"***************************************************************"<<endl;
+                            mover(IAmovi,tablero);}
                         
                         if(chequearGanador(IA,tablero) == true){ cout << "La maquina ha ganado!" << endl;}
 			turno++;
                         imprimirTablero(tablero);
                         cout<<"***************************************************************"<<endl;
-                        ia=false;
-		}
+                }
 	}
 }
 
@@ -595,14 +596,12 @@ bool Juego::chequearGanador(Jugador jugador, char TABLERO[10][10]){
 	
                 for(int j = 0; j < 10; j++) { if((TABLERO[i][j] == iaPeon) || (TABLERO[i][j] == iaDama)){piezas++;} }
             }
-        
         }else if(jugador == IA){
         
             for(int i = 0; i < 10; i++) {
 		for(int j = 0; j < 10; j++) { if((TABLERO[i][j] == humanoPeon) || (TABLERO[i][j] == humanoDama)){piezas++;} }
             }
         }
-                       
         if(piezas > 0){return false;}else return true;
         
         //Implementar triunfo por bloqueo.
@@ -621,16 +620,13 @@ void Juego::imprimirTablero(char tableros[10][10]){
                 cout <<"\n"<< " ------------------------------------------------------------";
 	}
         cout<<endl;
-	//cout << '\n' << " ------------------------------------------------------------" << '\n';
-
 }
 
-bool Juego::profundidad(int pro){   
+bool Juego::profundidad(int pro){
     // pro = 1: Si tiene la oportunidad para saltar lo hara, pero no evitara que saltes.
     // pro = 2: Tomara la oportunidad de saltar y evitara que saltes si es evidente, pero con buenos movimiento le puedes ganar.
     // pro = 3: De aqui en adelante se vuelve mas inteligente .
-    if(pro == 5){ return true;
-    }else{return false;} 
+    if(pro == 6){return true;}else{return false;} 
 }
 
 Movimiento Juego::minimax(char IAtablero[10][10]){
@@ -639,6 +635,127 @@ Movimiento Juego::minimax(char IAtablero[10][10]){
     Movimiento mejorJugada; mejorJugada.p = 1000; // va guardando el mejor movimiento y puntaje
     Movimiento mejorMovi; //Mejor movimiento a retornar.
     Movimiento mv; //Variable para enviar posiciones a evaluar.
+    bool SD = false,SI = false;// switch para guardar verdadero en caso de tener la posibilidad de capturar, para no seguir evaluando con otros movimientos.
+    int piezasIA = 0;// variable para contar numero de piezas que tiene la computadora a partir de la segunda fila.
+    int piezasH = 0;
+    int def = 1;//Por defecto las piezas se evaluan a partir de la fila 1.(estrategia defensiva) 
+    
+    char copiaTablero[10][10]; //tablero auxiliar.
+    
+    for(int i = 0; i < 10; i++){//crea una copia del original
+	for(int j = 0; j < 10; j++){
+        copiaTablero[i][j] = IAtablero[i][j];}}
+            
+    for(int i = 0; i < 10; i++) {//Si ya no tengo mas piezas para mover a partir de la fila 1, entonces habilito las piezas de la fila 0 para ser usadas. 
+	for(int j = 0; j < 10; j++){ 
+            if((IAtablero[i][j] == iaPeon) || (IAtablero[i][j] == iaDama)){piezasIA++;}
+            }}
+    for(int j = 0; j < 10; j++){if(IAtablero[9][j] == humanoPeon){piezasH++;}} 
+    
+        if(piezasIA < 6){def = 0;}//Si no tengo mas piezas que la fila 0, entonces la habilito.
+        if(piezasH < 5){def = 0;}//Si el humano mueve su filia 9, entonces habilita la fila 0.
+    
+    for(int i = def; i < 10; i++){
+	for(int j = 0; j < 10; j++){
+            
+            if(IAtablero[i][j] == iaDama){}
+            
+            if(IAtablero[i][j] == iaPeon){ //Evalua todos los movimientos con peones.
+                
+                int puntaje;
+                
+                mv.c1 = j; mv.f1 = i; //El origen del movimiento a evaluar es la posicion del peon encontrado. 
+                
+                mv.c2 = j + 2; mv.f2 = i + 2;//COORDENADAS PARA COMPROBAR SALTO POR LA DERECHA.
+                                
+                if(mv.f1 < 8 && mv.c1 < 8 && chequearMovimiento(IA, mv,IAtablero) == true && salto == true){ //Evalua primero el salto, de no ser posible hacer un movimiento simple.
+                    
+                        salto=false;//devuelve el valor de salto a defecto.
+                        
+                        puntaje = max(IAtablero,mv,1); 
+                        
+                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                        
+                        //puntaje = min(IAtablero,mv,1);//para multisaltos
+                        
+                        if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                }
+                
+                mv.c2 = j - 2; mv.f2 = i + 2;//COORDENADAS PARA COMPROBAR SALTO POR LA IZQUIERDA.
+                              
+                if(mv.f1 < 8 && mv.c1 > 1 && chequearMovimiento(IA, mv,IAtablero) == true && salto == true){//Evalua primero el salto, de no ser posible hacer un movimiento simple.
+                    
+                        salto=false;//devuelve el valor de salto a defecto.
+                        
+                        puntaje = max(IAtablero,mv,1);
+                        
+                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                                    
+                        if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                }
+                
+                if(SD == false && SI == false){//Evaluara movimiento simplo solo si no existe ninguna posibilidad de saltar
+                    
+                mv.c2 = j + 1; mv.f2 = i + 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA DERECHA.
+                                    
+                if(mv.f1 < 9 && mv.c1 < 9 && chequearMovimiento(IA, mv,IAtablero) == true ){ 
+                       
+                        puntaje = max(IAtablero,mv,1);
+                        
+                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                        
+                        if(puntaje < mejorJugada.p){
+                                      
+                            mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
+                        } 
+                }  
+                    
+                mv.c2 = j - 1; mv.f2 = i + 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA IZQUIERDA.
+  
+                if(mv.f1 < 9 && mv.c1 > 0 && chequearMovimiento(IA, mv,IAtablero) == true ){ 
+                        
+                        puntaje = max(IAtablero,mv,1);
+                        
+                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                                            
+                        if(puntaje < mejorJugada.p){
+                            
+                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
+                        }
+                }
+                }
+                SD = false;SI = false;
+                
+                if(mejorJugada.p < mejorPuntaje) {//Guarda el mejor movimiento entre sus cuatro posibilidades entre todos los peones.
+		
+                    mejorPuntaje = mejorJugada.p;
+                    mejorMovi.f1 = mejorJugada.f1;
+                    mejorMovi.c1 = mejorJugada.c1;
+                    mejorMovi.f2 = mejorJugada.f2;
+                    mejorMovi.c2 = mejorJugada.c2;
+                }
+            }
+        }
+    }
+    return mejorMovi;
+}
+
+int Juego::max(char IAtablero[10][10], Movimiento mvAnterior,int pro){
+    
+    if(profundidad(pro)){return 0;}//Si se alcanza la profundidad retorna 0.
+    
+    if((chequearMovimiento(IA, mvAnterior,IAtablero) == true && salto == true)){
+        mover(mvAnterior,IAtablero); salto = false;
+        return (pro -10);//Si la computadora captura una pieza enemiga gana el valor de "pro"(profundidad) menos 10 puntos. Incluso si la computadora sabe que va a perder siguiendo cualquier camino, escogera el mas largo y  tratara de alargar el juego lo mas que pueda, buscando la oportunidad para que el humano se equivoque.
+    }else{mover(mvAnterior,IAtablero);}
+    
+    //if(chequearGanador(IA,IAtablero)==true){return (pro -100);}
+    
+    int mejorPuntaje = -1001; //  si o si me guarda la primera jugada.
+    Movimiento mejorJugada; mejorJugada.p = -1000; // va guardando el mejor movimiento y puntaje
+    Movimiento mejorMovi; //Mejor movimiento a retornar.
+    Movimiento mv; //Variable para enviar posiciones a evaluar.
+    bool SD = false,SI = false;
     
     char copiaTablero[10][10]; //tablero auxiliar.
     
@@ -649,123 +766,7 @@ Movimiento Juego::minimax(char IAtablero[10][10]){
     for(int i = 0; i < 10; i++){
 	for(int j = 0; j < 10; j++){
             
-            if(IAtablero[i][j] == iaPeon){ //Evalua todos los movimientos con peones.
-                
-                int puntaje;
-                
-                mv.c1 = j; mv.f1 = i; //El origen del movimiento a evaluar es la posicion del peon encontrado. 
-                
-                mv.c2 = j + 2; mv.f2 = i + 2;//COORDENADAS PARA COMPROBAR SALTO POR LA DERECHA.
-                                
-                    if(mv.f1 < 8 && mv.c1 < 8 && chequearMovimiento(IA, mv,IAtablero) == true && salto == true){ //Evalua primero el salto, de no ser posible hacer un movimiento simple.
-                    
-                        salto=false;//devuelve el valor de salto a defecto.
-                        
-                        puntaje = max(IAtablero,mv,1);//Llama a la funcion recursiva para obtener un puntaje. 
-                        
-                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
-                        
-                        if(puntaje < mejorJugada.p){//Si el puntaje obtenido es mejor que el actual mejor, actualiza el mejor puntaje y movimiento.
-                        
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        }
-                        
-                    }else{//evalua un movimiento simple solo si no existe la posibilidad de saltar,ya que saltar es obligatorio.
-                 
-                mv.c2 = j + 1; mv.f2 = i + 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA DERECHA.
-                                    
-                    if(mv.f1 < 9 && mv.c1 < 9 && chequearMovimiento(IA, mv,IAtablero) == true ){ 
-                       
-                        
-                        
-                        puntaje = max(IAtablero,mv,1);
-                        
-                        
-                        
-                        
-                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
-                        
-                        if(puntaje < mejorJugada.p){
-                                      
-                            mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        } 
-                    }
-                    
-                    }
-                
-                mv.c2 = j - 2; mv.f2 = i + 2;//COORDENADAS PARA COMPROBAR SALTO POR LA IZQUIERDA.
-                              
-                    if(mv.f1 < 8 && mv.c1 > 1 && chequearMovimiento(IA, mv,IAtablero) == true && salto == true){//Evalua primero el salto, de no ser posible hacer un movimiento simple.
-                    
-                        salto=false;//devuelve el valor de salto a defecto.
-                        
-                        puntaje = max(IAtablero,mv,1);
-                        
-                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
-                                    
-                        if(puntaje < mejorJugada.p){
-                        
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        }
-                        
-                        
-                    
-                    }else{//evalua un movimiento simple solo si no existe la posibilidad de saltar,ya que saltar es obligatorio.
-                    
-                mv.c2 = j - 1; mv.f2 = i + 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA IZQUIERDA.
-  
-                
-                    if(mv.f1 < 9 && mv.c1 > 0 && chequearMovimiento(IA, mv,IAtablero) == true ){ 
-                        
-                        puntaje = max(IAtablero,mv,1);
-                        
-                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
-                                            
-                        if(puntaje < mejorJugada.p){
-                            
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        }
-                    }
-                    
-                    }
-                
-                if(mejorJugada.p < mejorPuntaje) {//Guarda el mejor movimiento entre sus cuatro posibilidades entre todos los peones.
-		
-                    mejorPuntaje = mejorJugada.p;
-                    mejorMovi.f1 = mejorJugada.f1;
-                    mejorMovi.c1 = mejorJugada.c1;
-                    mejorMovi.f2 = mejorJugada.f2;
-                    mejorMovi.c2 = mejorJugada.c2;
-                                        
-		}
-                                                           
-            }
-        }
-    }
-    
-    return mejorMovi;
-    
-}
-
-int Juego::max(char IAtablero[10][10], Movimiento mvAnterior,int pro) {
-    
-    if(profundidad(pro) || (chequearMovimiento(IA, mvAnterior,IAtablero) == true && salto == true)){salto = false; return puntaje(IA,mvAnterior,IAtablero);}//Si se alcanza la profundidad o si se termina el juego, retorna el puntaje del movimiento anterior en el tablero.
-    
-    mover(mvAnterior,IAtablero);// Aplica los cambios para trabajar con un tablero actualizado.
-
-    int mejorPuntaje = -1001; //  si o si me guarda la primera jugada.
-    Movimiento mejorJugada; mejorJugada.p = -1000; // va guardando el mejor movimiento y puntaje
-    Movimiento mejorMovi; //Mejor movimiento a retornar.
-    Movimiento mv; //Variable para enviar posiciones a evaluar.
-    
-    char copiaTablero[10][10]; //tablero auxiliar.
-    
-    for(int i = 0; i < 10; i++){//crea una copia del original
-	for(int j = 0; j < 10; j++){
-        copiaTablero[i][j] = IAtablero[i][j];}}
-    
-    for(int i = 0; i < 10; i++){
-	for(int j = 0; j < 10; j++){
+            if(IAtablero[i][j] == humanoDama){}//implementar movimientos con dama.
             
             if(IAtablero[i][j] == humanoPeon){ //Evalua todos los movimientos con peones.
                 
@@ -775,7 +776,7 @@ int Juego::max(char IAtablero[10][10], Movimiento mvAnterior,int pro) {
                 
                 mv.c2 = j + 2; mv.f2 = i - 2;//COORDENADAS PARA COMPROBAR SALTO POR LA DERECHA.
                                 
-                    if(mv.f1 > 1 && mv.c1 < 8 && chequearMovimiento(HUMANO, mv,IAtablero) == true && salto == true){ //Evalua primero el salto, de no ser posible hacer un movimiento simple.
+                if(mv.f1 > 1 && mv.c1 < 8 && chequearMovimiento(HUMANO, mv,IAtablero) == true && salto == true){ //Evalua primero el salto, de no ser posible hacer un movimiento simple.
                     
                         salto=false;//devuelve el valor de salto a defecto.
                         
@@ -783,62 +784,55 @@ int Juego::max(char IAtablero[10][10], Movimiento mvAnterior,int pro) {
                         
                         for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
                         
-                        if(puntaje > mejorJugada.p){//Si el puntaje obtenido es mejor que el actual mejor, actualiza el mejor puntaje y movimiento.
+                        if(puntaje > mejorJugada.p){mejorJugada.p = puntaje;}//Si el puntaje obtenido es mejor que el actual mejor, actualiza el mejor puntaje y movimiento.
                         
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        }
-                    }else{//evalua un movimiento simple solo si no existe la posibilidad de saltar,ya que saltar es obligatorio.
-                 
-                mv.c2 = j + 1; mv.f2 = i - 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA DERECHA.
-                                    
-                    if(mv.f1 > 0 && mv.c1 < 9 && chequearMovimiento(HUMANO, mv,IAtablero) == true ){ 
-                        
-                        puntaje = min(IAtablero,mv,pro + 1);
-                        
-                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
-                        
-                        if(puntaje > mejorJugada.p){
-                                      
-                            mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        } 
-                    }
-                    }
+                        SD = true;
+                }
                 
                 mv.c2 = j - 2; mv.f2 = i - 2;//COORDENADAS PARA COMPROBAR SALTO POR LA IZQUIERDA.
                               
-                    if(mv.f1 > 1 && mv.c1 > 1 && chequearMovimiento(HUMANO, mv,IAtablero) == true && salto == true){//Evalua primero el salto, de no ser posible hacer un movimiento simple.
+                if(mv.f1 > 1 && mv.c1 > 1 && chequearMovimiento(HUMANO, mv,IAtablero) == true && salto == true){//Evalua primero el salto, de no ser posible hacer un movimiento simple.
                     
                         salto=false;//devuelve el valor de salto a defecto.
-                        
+
                         puntaje = min(IAtablero,mv,pro + 1);
                         
                         for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
                                     
-                        if(puntaje > mejorJugada.p){
+                        if(puntaje > mejorJugada.p){mejorJugada.p = puntaje;}
                         
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
+                        SI = true;
+                }
+                
+                if(SD == false && SI == false){//analizara un movimiento simple, solo si no se puede saltar, ya que saltar es obligatorio.
+                
+                    mv.c2 = j + 1; mv.f2 = i - 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA DERECHA.
+
+                        if(mv.f1 > 0 && mv.c1 < 9 && chequearMovimiento(HUMANO, mv,IAtablero) == true ){ 
+
+                            puntaje = min(IAtablero,mv,pro + 1);
+
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+
+                            if(puntaje > mejorJugada.p){mejorJugada.p = puntaje;}
                         }
-                    }else{//evalua un movimiento simple solo si no existe la posibilidad de saltar,ya que saltar es obligatorio.
                     
-                mv.c2 = j - 1; mv.f2 = i - 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA IZQUIERDA.
-                                    
-                    if(mv.f1 > 0 && mv.c1 > 0 && chequearMovimiento(HUMANO, mv,IAtablero) == true ){ 
-                        
-                        puntaje = min(IAtablero,mv,pro + 1);
-                        
-                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
-                                            
-                        if(puntaje > mejorJugada.p){
-                            
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
+                    mv.c2 = j - 1; mv.f2 = i - 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA IZQUIERDA.
+
+                        if(mv.f1 > 0 && mv.c1 > 0 && chequearMovimiento(HUMANO, mv,IAtablero) == true ){ 
+
+                            puntaje = min(IAtablero,mv,pro + 1);
+
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+
+                            if(puntaje > mejorJugada.p){mejorJugada.p = puntaje;}                        
                         }
-                    }
-                    }
+                }
+                SD = false;SI = false;
                 
                 if(mejorJugada.p > mejorPuntaje) {//Guarda el mejor puntaje entre sus cuatro posibilidades entre todos los peones.
 		
                     mejorPuntaje = mejorJugada.p;
-                
                 }
             }
         }
@@ -847,16 +841,22 @@ int Juego::max(char IAtablero[10][10], Movimiento mvAnterior,int pro) {
 }
 
 int Juego::min(char IAtablero[10][10],Movimiento mvAnterior,int pro) {
- 
-    if(profundidad(pro) || (chequearMovimiento(HUMANO, mvAnterior,IAtablero) == true && salto == true)){ salto = false; return puntaje(HUMANO, mvAnterior,IAtablero);}//Calcula el puntaje del movimiento en el tablero.
     
-    mover(mvAnterior,IAtablero);
+    if(profundidad(pro)){return 0;}//Si se alcanza la profundidad retorna 0.
+    
+    if((chequearMovimiento(HUMANO, mvAnterior,IAtablero) == true && salto == true)) {
+        mover(mvAnterior,IAtablero); salto = false;
+        return (10 -pro );//Si el humano captura una pieza enemiga gana el valor de 10 menos "pro"(profundidad) puntos. Incluso si la computadora sabe que va a perder siguiendo cualquier camino, escogera el mas largo y tratara de alargar el juego lo mas que pueda, buscando la oportunidad para que el humano se equivoque.
+    }else{mover(mvAnterior,IAtablero);}
+    
+    //if(chequearGanador(HUMANO, IAtablero)==true){return (100 - pro); }//si humano gana, retorna 100.
     
     int mejorPuntaje = 1001; //  si o si me guarda la primera jugada.
     Movimiento mejorJugada; mejorJugada.p = 1000; // va guardando el mejor movimiento y puntaje
     Movimiento mejorMovi; //Mejor movimiento a retornar.
     Movimiento mv; //Variable para enviar posiciones a evaluar.
-    
+    bool SD = false,SI = false;
+        
     char copiaTablero[10][10]; //tablero auxiliar.
     
     for(int i = 0; i < 10; i++){//crea una copia del original
@@ -866,6 +866,8 @@ int Juego::min(char IAtablero[10][10],Movimiento mvAnterior,int pro) {
     for(int i = 0; i < 10; i++){
 	for(int j = 0; j < 10; j++){
             
+            if(IAtablero[i][j] == iaDama){}//implementar movimientos con dama.
+            
             if(IAtablero[i][j] == iaPeon){ //Evalua todos los movimientos con peones.
                 
                 int puntaje;
@@ -874,7 +876,7 @@ int Juego::min(char IAtablero[10][10],Movimiento mvAnterior,int pro) {
                 
                 mv.c2 = j + 2; mv.f2 = i + 2;//COORDENADAS PARA COMPROBAR SALTO POR LA DERECHA.
                                 
-                    if(mv.f1 < 8 && mv.c1 < 8 && chequearMovimiento(IA, mv,IAtablero) == true && salto == true){ //Evalua primero el salto, de no ser posible hacer un movimiento simple.
+                if(mv.f1 < 8 && mv.c1 < 8 && chequearMovimiento(IA, mv,IAtablero) == true && salto == true){ //Evalua primero el salto, de no ser posible hacer un movimiento simple.
                     
                         salto=false;//devuelve el valor de salto a defecto.
                         
@@ -882,37 +884,14 @@ int Juego::min(char IAtablero[10][10],Movimiento mvAnterior,int pro) {
                         
                         for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
                         
-                        if(puntaje < mejorJugada.p){//Si el puntaje obtenido es mejor que el actual mejor, actualiza el mejor puntaje y movimiento.
+                        if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;}//Si el puntaje obtenido es mejor que el actual mejor, actualiza el mejor puntaje y movimiento.
                         
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        }
-                        
-                    }else{//evalua un movimiento simple solo si no existe la posibilidad de saltar,ya que saltar es obligatorio.
-                 
-                mv.c2 = j + 1; mv.f2 = i + 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA DERECHA.
-                                    
-                    if(mv.f1 < 9 && mv.c1 < 9 && chequearMovimiento(IA, mv,IAtablero) == true ){ 
-                       
-                        
-                        
-                        puntaje = max(IAtablero,mv,pro + 1);
-                        
-                        
-                        
-                        
-                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
-                        
-                        if(puntaje < mejorJugada.p){
-                                      
-                            mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        } 
-                    }
-                    
-                    }
+                        SD = true;
+                }
                 
                 mv.c2 = j - 2; mv.f2 = i + 2;//COORDENADAS PARA COMPROBAR SALTO POR LA IZQUIERDA.
                               
-                    if(mv.f1 < 8 && mv.c1 > 1 && chequearMovimiento(IA, mv,IAtablero) == true && salto == true){//Evalua primero el salto, de no ser posible hacer un movimiento simple.
+                if(mv.f1 < 8 && mv.c1 > 1 && chequearMovimiento(IA, mv,IAtablero) == true && salto == true){//Evalua primero el salto, de no ser posible hacer un movimiento simple.
                     
                         salto=false;//devuelve el valor de salto a defecto.
                         
@@ -920,44 +899,48 @@ int Juego::min(char IAtablero[10][10],Movimiento mvAnterior,int pro) {
                         
                         for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
                                     
-                        if(puntaje < mejorJugada.p){
+                        if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;}
                         
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        }
+                        SI = true;
+                }
+                
+                if(SD == false && SI == false){//Evaluara movimiento simplo solo si no existe ninguna posibilidad de saltar
+                
+                mv.c2 = j + 1; mv.f2 = i + 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA DERECHA.
+                                    
+                if(mv.f1 < 9 && mv.c1 < 9 && chequearMovimiento(IA, mv,IAtablero) == true ){ 
+                       
+                        puntaje = max(IAtablero,mv,pro + 1);
                         
+                        for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
                         
-                    
-                    }else{//evalua un movimiento simple solo si no existe la posibilidad de saltar,ya que saltar es obligatorio.
-                    
+                        if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;}
+                }
+                
                 mv.c2 = j - 1; mv.f2 = i + 1;//COORDENADAS PARA COMPROBAR MOVIMIENTO POR LA IZQUIERDA.
   
-                
-                    if(mv.f1 < 9 && mv.c1 > 0 && chequearMovimiento(IA, mv,IAtablero) == true ){ 
+                if(mv.f1 < 9 && mv.c1 > 0 && chequearMovimiento(IA, mv,IAtablero) == true ){ 
                         
                         puntaje = max(IAtablero,mv,pro + 1);
                         
                         for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
                                             
-                        if(puntaje < mejorJugada.p){
-                            
-                            mejorJugada.p = puntaje; mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;
-                        }
-                    }
-                    
-                    }
+                        if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;}
+                }
+                }
                 
+                SD = false; SI = false;
+                    
                 if(mejorJugada.p < mejorPuntaje) {//Guarda el mejor movimiento entre sus cuatro posibilidades entre todos los peones.
 		
                     mejorPuntaje = mejorJugada.p;
                 }
-                                                           
             }
         }
     }
-    
     return mejorPuntaje;
 }
-
+/*
 int Juego::puntaje(Jugador jugador, Movimiento mv,char TABLERO[10][10]){
     
     if(jugador == HUMANO){
@@ -970,5 +953,5 @@ int Juego::puntaje(Jugador jugador, Movimiento mv,char TABLERO[10][10]){
     
     }else return 0;
 }
-
+*/
 

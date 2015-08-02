@@ -20,10 +20,10 @@ enum Jugador{
 
 struct Movimiento{
     int f1;//fila de origen.
-    int f2;//fila de destino.
     int c1;//columna de origen.
+    int f2;//fila de destino.
     int c2;//columna de destino.
-    int p; //guarda puntaje de la jugada en la funcion minimax.
+    int p; //guarda el puntaje de capturas y movimientos simples de la jugada en la funcion minimax.
 };
 
 class Juego{
@@ -45,18 +45,18 @@ class Juego{
     /*
     char tablero[10][10] =
     {
-        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
-        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
-        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
-        {' ',' ',' ',' ','n',' ',' ',' ',' ',' '},
-        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
-        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
-        {' ','b',' ','b',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ','n',' ',' ','b',' ','b'},
         {' ',' ',' ',' ',' ',' ',' ',' ','b',' '},
         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ','b',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+        {' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
     };
-    */
+     */
 public:
     
     Juego();
@@ -67,7 +67,7 @@ public:
     void mover(Movimiento, char tablero[10][10]);//
     void multisalto(Movimiento, char tablero[10][10]);//
     void sopladita(Movimiento,char tablero[10][10]);//
-    int puntaje(Jugador,Movimiento,char tablero[10][10]);//
+    //int puntaje(Jugador,Movimiento,char tablero[10][10]);//
     bool profundidad(int pro);
     Movimiento minimax(char tablero[10][10]);//
     int min(char tablero[10][10],Movimiento mv, int pro);//
