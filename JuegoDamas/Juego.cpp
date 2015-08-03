@@ -626,7 +626,7 @@ bool Juego::profundidad(int pro){
     // pro = 1: Si tiene la oportunidad para saltar lo hara, pero no evitara que saltes.
     // pro = 2: Tomara la oportunidad de saltar y evitara que saltes si es evidente, pero con buenos movimiento le puedes ganar.
     // pro = 3: De aqui en adelante se vuelve mas inteligente .
-    if(pro == 6){return true;}else{return false;} 
+    if(pro == 3){return true;}else{return false;} 
 }
 
 Movimiento Juego::minimax(char IAtablero[10][10]){
@@ -637,7 +637,7 @@ Movimiento Juego::minimax(char IAtablero[10][10]){
     Movimiento mv; //Variable para enviar posiciones a evaluar.
     bool SD = false,SI = false;// switch para guardar verdadero en caso de tener la posibilidad de capturar, para no seguir evaluando con otros movimientos.
     int piezasIA = 0;// variable para contar numero de piezas que tiene la computadora a partir de la segunda fila.
-    int piezasH = 0;
+    int piezasH = 0;// variable para contar numero de piezas que tiene el humano en su ultima fila.
     int def = 1;//Por defecto las piezas se evaluan a partir de la fila 1.(estrategia defensiva) 
     
     char copiaTablero[10][10]; //tablero auxiliar.
@@ -658,7 +658,128 @@ Movimiento Juego::minimax(char IAtablero[10][10]){
     for(int i = def; i < 10; i++){
 	for(int j = 0; j < 10; j++){
             
-            if(IAtablero[i][j] == iaDama){}
+            if(IAtablero[i][j] == iaDama){// evalua los movimietos con damas
+            
+                int puntaje;
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL INFERIOR DERECHA.
+                    
+                int c = j + 1, f = i + 1;//Toma a la casilla siguiente como primera casila a analizar.
+                
+                mv.c1 = j; mv.f1 = i; //El origen del movimiento a evaluar es la posicion del peon encontrado. 
+                
+                while(c < 9 && f < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == humanoPeon) || (IAtablero[f][c] == humanoDama)){
+                        
+                        mv.f2 = f + 1; mv.c2 = c + 1; //Guarda la casilla siguiente como la casilla destino.
+                        
+                        if((chequearMovimiento(IA, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = -1 + max(IAtablero,mv,1);// le sumamos menos uno para que prefiera comer con una dama en vez de un peon.
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                            
+                            }
+                        }
+                        c++;f++;
+                        }
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL INFERIOR IZQUIERDA.
+                    
+                c = j - 1; f = i + 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                while(c > 0 && f < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == humanoPeon) || (IAtablero[f][c] == humanoDama)){
+                            
+                        mv.f2 = f + 1; mv.c2 = c - 1;//Guarda la casilla siguiente como la casilla destino. 
+                        
+                        if((chequearMovimiento(IA, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = -1 + max(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                            
+                        }
+                    }
+                    c--;f++;
+                }
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL SUPERIOR IZQUIERDA.
+                    
+                c = j - 1; f = i - 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                while(c > 0 && f > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == humanoPeon) || (IAtablero[f][c] == humanoDama)){//Guarda la casilla siguiente como la casilla destino.
+                            
+                        mv.f2 = f - 1; mv.c2 = c - 1; 
+                        
+                        if((chequearMovimiento(IA, mv,IAtablero) == true) && (salto == true)){
+                                
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = -1 + max(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                                
+                        }
+                    }
+                    c--;f--;
+                }
+                        
+                //Busca un peon o dama enemiga dentro de la DIAGONAL SUPERIOR DERECHA.
+                    
+                c = j + 1, f = i - 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento.
+                                               
+                while(c < 9 && f > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == humanoPeon) || (IAtablero[f][c] == humanoDama)){//Guarda la casilla siguiente como la casilla destino.
+                            
+                        mv.f2 = f - 1; mv.c2 = c + 1; 
+                        
+                        if((chequearMovimiento(IA, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = -1 + max(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                               
+                        }
+                    }
+                    c++;f--;
+                }
+                                
+                if(mejorJugada.p < mejorPuntaje) {//Guarda el mejor movimiento entre todas las damas.
+		
+                    mejorPuntaje = mejorJugada.p;
+                    mejorMovi.f1 = mejorJugada.f1;
+                    mejorMovi.c1 = mejorJugada.c1;
+                    mejorMovi.f2 = mejorJugada.f2;
+                    mejorMovi.c2 = mejorJugada.c2;
+                }
+            
+            }
             
             if(IAtablero[i][j] == iaPeon){ //Evalua todos los movimientos con peones.
                 
@@ -766,7 +887,125 @@ int Juego::max(char IAtablero[10][10], Movimiento mvAnterior,int pro){
     for(int i = 0; i < 10; i++){
 	for(int j = 0; j < 10; j++){
             
-            if(IAtablero[i][j] == humanoDama){}//implementar movimientos con dama.
+            if(IAtablero[i][j] == humanoDama){// evalua los movimietos con damas
+            
+                int puntaje;
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL INFERIOR DERECHA.
+                    
+                int c = j + 1, f = i + 1;//Toma a la casilla siguiente como primera casila a analizar.
+                
+                mv.c1 = j; mv.f1 = i; //El origen del movimiento a evaluar es la posicion del peon encontrado. 
+                
+                while(c < 9 && f < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == iaPeon) || (IAtablero[f][c] == iaDama)){
+                        
+                        mv.f2 = f + 1; mv.c2 = c + 1; //Guarda la casilla siguiente como la casilla destino.
+                        
+                        if((chequearMovimiento(HUMANO, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = 1 + min(IAtablero,mv,1);// le sumamos uno para que prefiera comer con una dama en vez de un peon.
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje > mejorJugada.p){mejorJugada.p = puntaje;}
+                            
+                            }
+                        }
+                        c++;f++;
+                        }
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL INFERIOR IZQUIERDA.
+                    
+                c = j - 1; f = i + 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                while(c > 0 && f < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == iaPeon) || (IAtablero[f][c] == iaDama)){
+                            
+                        mv.f2 = f + 1; mv.c2 = c - 1;//Guarda la casilla siguiente como la casilla destino. 
+                        
+                        if((chequearMovimiento(HUMANO, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = 1 + min(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje > mejorJugada.p){mejorJugada.p = puntaje;}
+                            
+                        }
+                    }
+                    c--;f++;
+                }
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL SUPERIOR IZQUIERDA.
+                    
+                c = j - 1; f = i - 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                while(c > 0 && f > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == iaPeon) || (IAtablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                            
+                        mv.f2 = f - 1; mv.c2 = c - 1; 
+                        
+                        if((chequearMovimiento(HUMANO, mv,IAtablero) == true) && (salto == true)){
+                                
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = 1 + min(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje > mejorJugada.p){mejorJugada.p = puntaje;}
+                                
+                        }
+                    }
+                    c--;f--;
+                }
+                        
+                //Busca un peon o dama enemiga dentro de la DIAGONAL SUPERIOR DERECHA.
+                    
+                c = j + 1, f = i - 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento.
+                                               
+                while(c < 9 && f > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == iaPeon) || (IAtablero[f][c] == iaDama)){//Guarda la casilla siguiente como la casilla destino.
+                            
+                        mv.f2 = f - 1; mv.c2 = c + 1; 
+                        
+                        if((chequearMovimiento(HUMANO, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = 1 + min(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje > mejorJugada.p){mejorJugada.p = puntaje;}
+                               
+                        }
+                    }
+                    c++;f--;
+                }
+                                
+                if(mejorJugada.p > mejorPuntaje) {//Guarda el mejor movimiento entre todas las damas.
+		
+                    mejorPuntaje = mejorJugada.p;
+                    
+                }
+            
+            }
             
             if(IAtablero[i][j] == humanoPeon){ //Evalua todos los movimientos con peones.
                 
@@ -849,7 +1088,7 @@ int Juego::min(char IAtablero[10][10],Movimiento mvAnterior,int pro) {
         return (10 -pro );//Si el humano captura una pieza enemiga gana el valor de 10 menos "pro"(profundidad) puntos. Incluso si la computadora sabe que va a perder siguiendo cualquier camino, escogera el mas largo y tratara de alargar el juego lo mas que pueda, buscando la oportunidad para que el humano se equivoque.
     }else{mover(mvAnterior,IAtablero);}
     
-    //if(chequearGanador(HUMANO, IAtablero)==true){return (100 - pro); }//si humano gana, retorna 100.
+    //if(chequearGanador(HUMANO, IAtablero)==true){return (100 - pro); }//si humano gana, retorna 100
     
     int mejorPuntaje = 1001; //  si o si me guarda la primera jugada.
     Movimiento mejorJugada; mejorJugada.p = 1000; // va guardando el mejor movimiento y puntaje
@@ -866,7 +1105,128 @@ int Juego::min(char IAtablero[10][10],Movimiento mvAnterior,int pro) {
     for(int i = 0; i < 10; i++){
 	for(int j = 0; j < 10; j++){
             
-            if(IAtablero[i][j] == iaDama){}//implementar movimientos con dama.
+            if(IAtablero[i][j] == iaDama){// evalua los movimietos con damas
+            
+                int puntaje;
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL INFERIOR DERECHA.
+                    
+                int c = j + 1, f = i + 1;//Toma a la casilla siguiente como primera casila a analizar.
+                
+                mv.c1 = j; mv.f1 = i; //El origen del movimiento a evaluar es la posicion del peon encontrado. 
+                
+                while(c < 9 && f < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == humanoPeon) || (IAtablero[f][c] == humanoDama)){
+                        
+                        mv.f2 = f + 1; mv.c2 = c + 1; //Guarda la casilla siguiente como la casilla destino.
+                        
+                        if((chequearMovimiento(IA, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = -1 + max(IAtablero,mv,1);// le sumamos menos uno para que prefiera comer con una dama en vez de un peon.
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                            
+                            }
+                        }
+                        c++;f++;
+                        }
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL INFERIOR IZQUIERDA.
+                    
+                c = j - 1; f = i + 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                while(c > 0 && f < 9){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == humanoPeon) || (IAtablero[f][c] == humanoDama)){
+                            
+                        mv.f2 = f + 1; mv.c2 = c - 1;//Guarda la casilla siguiente como la casilla destino. 
+                        
+                        if((chequearMovimiento(IA, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = -1 + max(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                            
+                        }
+                    }
+                    c--;f++;
+                }
+                
+                //Busca un peon o dama enemiga dentro de la DIAGONAL SUPERIOR IZQUIERDA.
+                    
+                c = j - 1; f = i - 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento
+                                               
+                while(c > 0 && f > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == humanoPeon) || (IAtablero[f][c] == humanoDama)){//Guarda la casilla siguiente como la casilla destino.
+                            
+                        mv.f2 = f - 1; mv.c2 = c - 1; 
+                        
+                        if((chequearMovimiento(IA, mv,IAtablero) == true) && (salto == true)){
+                                
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = -1 + max(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                                
+                        }
+                    }
+                    c--;f--;
+                }
+                        
+                //Busca un peon o dama enemiga dentro de la DIAGONAL SUPERIOR DERECHA.
+                    
+                c = j + 1, f = i - 1;//Toma a la casilla siguiente como primera casilla a analizar.
+                    
+                mv.f1 = i; mv.c1 = j;//Guarda la pieza como origen del movimiento.
+                                               
+                while(c < 9 && f > 0){//Limita la busqueda hasta la penultima casilla del borde del tablero.
+                        
+                    if((IAtablero[f][c] == humanoPeon) || (IAtablero[f][c] == humanoDama)){//Guarda la casilla siguiente como la casilla destino.
+                            
+                        mv.f2 = f - 1; mv.c2 = c + 1; 
+                        
+                        if((chequearMovimiento(IA, mv,IAtablero) == true) && (salto == true)){
+                            
+                            salto = false;//devuelve el valor de salto a defecto.
+                            
+                            puntaje = -1 + max(IAtablero,mv,1); 
+                        
+                            for(int i = 0; i < 10; i++){for(int j = 0; j < 10; j++){IAtablero[i][j] = copiaTablero[i][j];}}//devuelve el valor del original.
+                            
+                            if(puntaje < mejorJugada.p){mejorJugada.p = puntaje;mejorJugada.f1 = mv.f1; mejorJugada.c1 = mv.c1;mejorJugada.f2 = mv.f2; mejorJugada.c2 = mv.c2;}
+                               
+                        }
+                    }
+                    c++;f--;
+                }
+                                
+                if(mejorJugada.p < mejorPuntaje) {//Guarda el mejor movimiento entre todas las damas.
+		
+                    mejorPuntaje = mejorJugada.p;
+                    mejorMovi.f1 = mejorJugada.f1;
+                    mejorMovi.c1 = mejorJugada.c1;
+                    mejorMovi.f2 = mejorJugada.f2;
+                    mejorMovi.c2 = mejorJugada.c2;
+                }
+            
+            }
             
             if(IAtablero[i][j] == iaPeon){ //Evalua todos los movimientos con peones.
                 
