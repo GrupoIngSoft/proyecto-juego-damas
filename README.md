@@ -6,6 +6,6 @@ INSTRUCCIONES DE COMPILACION:
 2.- dirigirse hacia la carpeta del proyecto donde esté descargada 
 	(cd direccion/proyecto-juego-damas/JuegoDamas)
 3.- compilar el archivo "Juego.cpp" de esta manera 
-	g++ -o <nombre de ejecutable> Juego.cpp
+	g++ -o 'nombre de ejecutable' Juego.cpp
 4.- ejecutar el programa de la siguiente manera
-	./Juego
+	./'nombre de ejecutable'
