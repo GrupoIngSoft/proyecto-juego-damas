@@ -13,7 +13,36 @@ bool salto=false;//switch que avisa a las otras funciones que se realiza un salt
 bool mnsj_err=false;//switch que permite imprimir mensajes de error solo cuando el humano mueve.
 bool ia=false;//switch para evitar acciones no deseadas cuando juega minimax.
 
-Juego::Juego(){}
+Juego::Juego(){
+    
+    for(int i = 0; i < 10; i++) {
+		for(int j = 0; j < 10; j++) {
+                
+                    tablero[i][j] = ' ';
+                }
+    }
+    
+    for(int i = 0; i < 10; i++) {
+		for(int j = 0; j < 10; j++) {
+                    
+                    if(j%2 == 1){
+			tablero[0][j] = iaPeon;
+                        tablero[2][j] = iaPeon;
+                    }
+                    if(j%2 == 0){
+                        tablero[1][j] = iaPeon;
+                    }
+                    if(j%2 == 0){
+			tablero[7][j] = humanoPeon;
+                        tablero[9][j] = humanoPeon;
+                    }
+                    if(j%2 == 1){
+                        tablero[8][j] = humanoPeon;
+                    }
+                    
+                }
+    }
+}
 
 bool Juego::chequearMovimiento(Jugador jugador, Movimiento mv, char TABLERO[10][10]){ 
 
@@ -1314,4 +1343,11 @@ int Juego::puntaje(Jugador jugador, Movimiento mv,char TABLERO[10][10]){
     }else return 0;
 }
 */
+int main(int argc, char** argv) {
+    
+    Juego damas;
+    
+    damas.jugar();
 
+    return 0;
+}
